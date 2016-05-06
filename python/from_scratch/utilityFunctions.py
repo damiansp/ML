@@ -27,6 +27,6 @@ def polynomial_sframe(feature, degree):
     return poly_sframe
 
 # Test
-test_vec = sframe.SArray([1, 2, 3, 4, 5])
-test_sf = polynomial_sframe(test_vec, 5)
-print test_sf
+#test_vec = sframe.SArray([1, 2, 3, 4, 5])
+#test_sf = polynomial_sframe(test_vec, 5)
+#print test_sf
