@@ -7,7 +7,7 @@ import regression as reg
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                           '../'))
 import utilityFunctions as uf
-
+from k_folds import k_folds_regression
 
 
 # Load some data
@@ -115,3 +115,25 @@ mod4_preds = reg.predict(complex_test, mod4_w)
 mod4_rss = uf.get_rss(mod4_preds, Y_test)
 print 'mod4 rss:', mod4_rss # 2.69161738627ee+14 (a further slight improvement)
 
+
+
+
+# Use k-folds cross validation to tune l2_penalty parameter (lambda),
+# with k = 10
+
+# set lambda as [0, 1, 10, 100, ... 1e8]
+l2_lambdas = np.logspace(start = 0, stop = 8, num = 9)
+l2_lambdas = np.hstack((0, l2_lambdas))
+
+for l2 in l2_lambdas:
+     cv_rss = k_folds_regression(k = 10,
+                                 X = complex_train,
+                                 Y = Y_train,
+                                 eta = eta,
+                                 tolerance = tolerance,
+                                 max_iterations = 100,
+                                 l2_penalty = l2)
+     print('rss = %.0f\tlambda = %.0f' %(cv_rss, l2))
+
+# in this case, the model with no l2_penalty (lambda = 0) performs best
+# (smallest RSS)
