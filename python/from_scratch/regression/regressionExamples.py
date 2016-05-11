@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sframe
 import os, sys
-import multipleRegression as reg
+import regression as reg
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                           '../'))
@@ -85,10 +85,33 @@ mod2_w = reg.regression_gradient_descent(
         complex_train, Y_train, initial_w, eta, tolerance)
 
 mod2_preds = reg.predict(complex_test, mod2_w)
-mod2_rss = uf.get_rss(mod2_preds, test['price'])
+mod2_rss = uf.get_rss(mod2_preds, Y_test)
 print 'mod2 rss:', mod2_rss # 2.69161743496e+14 (improved over simpler model)
 
 
 
 
+
+# Ridge Regression: Add l2_penalty
+mod3_w = reg.regression_gradient_descent(complex_train,
+                                         Y_train,
+                                         initial_w,
+                                         eta,
+                                         tolerance,
+                                         max_iterations = 100,
+                                         l2_penalty = 100)
+mod3_preds = reg.predict(complex_test, mod3_w)
+mod3_rss = uf.get_rss(mod3_preds, Y_test)
+print 'mod3 rss:', mod3_rss # 2.69161743447e+14 (a slight improvement)
+
+mod4_w = reg.regression_gradient_descent(complex_train,
+                                         Y_train,
+                                         initial_w,
+                                         eta,
+                                         tolerance,
+                                         max_iterations = 100,
+                                         l2_penalty = 10000)
+mod4_preds = reg.predict(complex_test, mod4_w)
+mod4_rss = uf.get_rss(mod4_preds, Y_test)
+print 'mod4 rss:', mod4_rss # 2.69161738627ee+14 (a further slight improvement)
 
