@@ -1,4 +1,18 @@
-def k_folds_regression(k, X, Y, features_list, l1_penalty = 0, l2_penalty = 0):
+import numpy as np
+import os, sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             'regression/'))
+from regression import *
+
+
+def k_folds_regression(k,
+                       X,
+                       Y,
+                       eta,
+                       tolerance,
+                       max_iterations,
+                       l2_penalty = 0):
     '''
     Split the data in the model matrix into k folds and use the hold-out group
     in each for cross validation.
@@ -27,27 +41,33 @@ def k_folds_regression(k, X, Y, features_list, l1_penalty = 0, l2_penalty = 0):
         fold_start = fold * fold_size
 
         # hold out a validation set
-        validation = X[fold_start:(fold_start + fold_size)]
+        X_validation = X[fold_start:(fold_start + fold_size)]
         Y_validation = Y[fold_start:(fold_start + fold_size)]
 
         # the test set is then all data except the validation set
         # data before the validation set:
-        test_pre = X[0:fold_start]
+        train_pre = X[0:fold_start, :]
         Y_pre = Y[0:fold_start]
         # and after it:
-        test_post = X[(fold_start + fold_size):n]
-        Y_post = X[(fold_start + fold_size):n]
+        train_post = X[(fold_start + fold_size):n, :]
+        Y_post = Y[(fold_start + fold_size):n]
         # merge pre and post:
-        test = test_pre.append(test_post)
-        Y_test = Y_pre.append(Y_post)
+
+        X_train = np.vstack((train_pre, train_post))
+        Y_train = np.hstack((Y_pre, Y_post))
         
-        # TO DO: once gradient descent for l1 and l2 penalties has been
-        # completed:
-        # mod = ...
+        weights = regression_gradient_descent(X = X_train,
+                                              Y = Y_train,
+                                              W_init = np.zeros(len(X[0, :])),
+                                              eta = eta,
+                                              tolerance = tolerance,
+                                              max_iterations = max_iterations,
+                                              # l1_penalty = 0,
+                                              l2_penalty = l2_penalty)
 
-        # predictions = ...
-
-        error = predictions - Y_test
+        # Test model on the validation group
+        predictions = predict(X_validation, weights)
+        error = predictions - Y_validation
         total_rss += sum(error ** 2)
 
     return total_rss / k
