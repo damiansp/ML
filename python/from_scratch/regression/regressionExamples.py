@@ -92,7 +92,7 @@ print 'mod2 rss:', mod2_rss # 2.69161743496e+14 (improved over simpler model)
 
 
 
-# Ridge Regression: Add l2_penalty
+# Ridge Regression: Add l2_penalty-----------------------------------------
 mod3_w = reg.regression_gradient_descent(complex_train,
                                          Y_train,
                                          initial_w,
@@ -137,3 +137,39 @@ for l2 in l2_lambdas:
 
 # in this case, the model with no l2_penalty (lambda = 0) performs best
 # (smallest RSS)
+
+
+
+
+# Lasso Regression: Add l1_penalty-----------------------------------------
+train_data, test_data = sales.random_split(0.8, seed = 0)
+all_features = ['bedrooms',
+                'bathrooms',
+                'sqft_living',
+                'sqft_lot',
+                'floors',
+                'waterfront',
+                'view',
+                'condition',
+                'grade',
+                'sqft_above',
+                'sqft_basement',
+                'yr_built',
+                'yr_renovated']
+(train_X, train_Y) = uf.get_numpy_data(train_data, all_features, 'price')
+
+# Noramlize features:
+train_X_normalized, train_norms = uf.normalize_features(train_X)
+W_init = np.zeros(len(all_features) + 1) # intialize weights as 0s
+tolerance = 1.0
+
+# find optimal weights when l1_penalty is 1e7
+w1e7 = reg.lasso_coordinate_descent(
+     train_X_normalized, train_Y, W_init, 1e7, tolerance)
+
+feat = ['intercept'] + all_features
+for (f, w) in zip(feat, w1e7):
+     print(f, w)
+
+
+# NEXT: Optimize l1_penalty with k-folds cross validation
