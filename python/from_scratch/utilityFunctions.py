@@ -1,4 +1,5 @@
 import sframe
+import numpy as np
 
 def get_numpy_data(data_sframe, features, Y, verbose = False):
     '''                                                                       
@@ -75,3 +76,23 @@ def polynomial_sframe(feature, degree):
 #test_vec = sframe.SArray([1, 2, 3, 4, 5])
 #test_sf = polynomial_sframe(test_vec, 5)
 #print test_sf
+
+
+
+def normalize_features(X):
+    '''
+    Normalize the columns of a model matrix. 
+    NOTE: this is the value as a fraction of its vector norm and NOT standard
+      deviates (Z scores)
+
+    @param X (matrix):
+      the model matrix
+    @return list:
+      normalized_features: the normalized model matrix (matrix)
+      norms: the norms of each column (used to repeat same normalization on 
+        test data (vector)
+    '''
+    norms = np.linalg.norm(X, axis = 0)
+    normalized_features = X / norms
+
+    return (normalized_features, norms)
