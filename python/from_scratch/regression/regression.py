@@ -235,6 +235,6 @@ def lasso_coordinate_descent(X, Y, W_init, l1_penalty, tolerance):
             coord_change = abs(W[i] - old_weight)
 
             if coord_change > max_step:
-                max_step = coord_chnage
+                max_step = coord_change
 
     return W
