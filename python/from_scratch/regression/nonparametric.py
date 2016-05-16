@@ -1,3 +1,4 @@
+import numpy as np
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              '../'))
@@ -23,7 +24,7 @@ def get_knn(k, X, query_v):
     @return:
       the indices for the nearest neigbors (sorted by distance)
     '''
-    dists = distance.get_all_euclidian_distances(X, query_v)
+    dists = distance.get_all_distances_euclidian(X, query_v)
     sorted_indices = np.argsort(dists)
     return sorted_indices[:k]
 

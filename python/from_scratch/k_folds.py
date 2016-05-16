@@ -117,7 +117,7 @@ def k_folds(k, model, X, Y):
         Y_train = np.hstack((Y_pre, Y_post))
 
         # Test model on the validation group
-        predictions = 
+        predictions = '''TO DO'''
         error = predictions - Y_validation
         total_rss += sum(error ** 2)
 
