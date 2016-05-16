@@ -3,6 +3,7 @@ import numpy as np
 import sframe
 import os, sys
 import regression as reg
+import nonparametric
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                           '../'))
@@ -172,4 +173,60 @@ for (f, w) in zip(feat, w1e7):
      print(f, w)
 
 
-# NEXT: Optimize l1_penalty with k-folds cross validation
+
+
+
+# Example using k-nearest-neighbors (nonparametric) regression:
+(train_and_validation, test) = sales.random_split(0.8, seed = 1)
+(train, validation) = train_and_validation.random_split(0.8, seed = 1)
+
+feature_list = ['bedrooms',
+                'bathrooms',
+                'sqft_living',
+                'sqft_lot',
+                'floors',
+                'waterfront',
+                'view',
+                'condition',
+                'grade',
+                'sqft_above',
+                'sqft_basement',
+                'yr_built',
+                'yr_renovated',
+                'lat',
+                'long',
+                'sqft_living15',
+                'sqft_lot15']
+features_train, output_train = uf.get_numpy_data(train, feature_list, 'price')
+features_test, output_test = uf.get_numpy_data(test, feature_list, 'price')
+features_valid, output_valid = uf.get_numpy_data(
+     validation, feature_list, 'price')
+
+# Normalize data:
+# normalize training set features (columns)
+features_train, norms = uf.normalize_features(features_train)
+# normalize test set by training set norms
+features_test = features_test / norms
+# normalize validation set by training set norms
+features_valid = features_valid / norms
+
+# Note all feature values now have magnitudes between 0 and 1
+print 'Sample test data row:', features_test[0]
+
+# Find k that minimizes validation error
+rss_all = []
+
+for k in range(1, 16, 1):
+     preds = nonparametric.knn_predict_all(
+          k, features_train, output_train, features_valid[:])
+     error = preds - output_valid
+     rss = sum(error ** 2)
+     rss_all.append(rss)
+     print k, 'rss:', rss
+
+k_vals = range(1, 16)
+plt.plot(k_vals, rss_all, 'bo-')
+plt.title('Optimizing the k parameter for k-nearest-neighbors regression')
+plt.xlabel('k nearest neighbors')
+plt.ylabel('Validation error (RSS)')
+plt.show()
