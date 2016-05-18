@@ -1,4 +1,5 @@
 import sframe
+import string
 import numpy as np
 
 def get_numpy_data(data_sframe, features, Y, verbose = False):
@@ -96,3 +97,7 @@ def normalize_features(X):
     normalized_features = X / norms
 
     return (normalized_features, norms)
+
+
+def strip_punctuation(text):
+    return text.translate(None, string.punctuation)
