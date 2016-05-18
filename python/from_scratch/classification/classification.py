@@ -1,7 +1,7 @@
 from __future__ import division
 
 
-def predict_probability_logit(X, W):
+def predict_probability_logistic(X, W):
     '''
     Produce probability estimates for P(y[i] = 1 | x[i], W) =
     1 / (1 + exp(-WTh(x[i]))), where WT is the transpose of W, and h(x[i]) 
