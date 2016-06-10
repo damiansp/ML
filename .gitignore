@@ -2,3 +2,4 @@ data/
 *~
 *.pyc
 TODO.txt
+.ipynb_checkpoints
