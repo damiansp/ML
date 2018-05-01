@@ -1,5 +1,19 @@
 data/
+project/
+target/
+
+# OS Generated
+#=============
+.DS_Store
 *~
+
+
+# Python/Jupyter
+#===============
 *.pyc
-TODO.txt
 .ipynb_checkpoints
+__pycache__
+
+
+TODO.txt
+
