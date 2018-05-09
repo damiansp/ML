@@ -2,6 +2,7 @@ data/
 project/
 target/
 
+
 # OS Generated
 #=============
 .DS_Store
@@ -13,6 +14,11 @@ target/
 *.pyc
 .ipynb_checkpoints
 __pycache__
+
+
+# IntelliJ
+#=========
+.idea/
 
 
 TODO.txt
