@@ -1,4 +1,6 @@
 import breeze.linalg._
+import breeze.numerics._
+import breeze.stats._
 
 /** Vectors */
 val v = DenseVector(1.0, 2.0, 3.0)
@@ -53,3 +55,47 @@ println(m(0 until 2, 0 until 2)) // 1.0 2.0
 println(m(::, 1)) // 2.0, 5.0; numpy m[:, 1]
 
 
+/** Mutating Vectors and Matrices */
+val v = DenseVector(1.0, 2.0, 3.0)
+v(1) = 22.0
+v(0 until 2) := DenseVector(50.0, 51.0)
+v(0 until 2) := 0.0 // recycles vector
+
+val v = DenseVector(1.0, 2.0, 3.0)
+v :+= 4.0
+
+val v = DenseVector.tabulate(6) { _.toDouble } // 0.0, 1.0, 2.0, 3.0, 4.0, 5.0
+val viewEvens = v(0 until v.length by 2) // 0.0, 2.0, 4.0
+viewEvens := 10.0 // 10.0, 10.0, 10.0
+v // 10.0, 1.0, 10.0, 3.0, 10.0, 5.0  !!
+val copyEvens = v(0 until v.length by 2).copy
+
+
+/** Matrix Multiplication, Transposition, and the Orientation of Vectors  */
+val m1 = DenseMatrix((2.0, 3.0), (5.0, 6.0), (8.0, 9.0))
+val m2 = DenseMatrix((10.0, 11.0), (12.0, 13.0))
+m1 * m2 // matrix multiply
+
+val v = DenseVector(1.0, 2.0)
+m1 * v
+val vTranspose = v.t
+vTranspose * m1
+
+
+/** Data Processing and Feature Engineering */
+val data = HWData.load
+data.genders
+val maleVector = DenseVector.fill(data.genders.length)('M')
+val isMale = (data.genders :== maleVector)
+val maleHeights = data.heights(isMale)
+maleHeights.toDenseVector
+sum(I(isMale))
+mean(data.heights)
+mean(data.heights(isMale))
+mean(data.heights(!isMale))
+
+val discrepancy = (data.weights - data.reportedWeights) / data.weights
+mean(discrepancy(isMale))
+stddev(discrepancy(isMale))
+val overReportMask = (data.reportedHeights :> data.heights).toDenseVector
+sum(I(overReportMask :& isMale))
