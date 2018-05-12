@@ -1,5 +1,7 @@
+/**-----*//**-----*//**-----*//**-----*//**-----*//**-----*//**-----*//**-----*//**-----*//**-----*/
 import breeze.linalg._
 import breeze.numerics._
+import breeze.optimize._
 import breeze.stats._
 
 /** Vectors */
@@ -99,3 +101,30 @@ mean(discrepancy(isMale))
 stddev(discrepancy(isMale))
 val overReportMask = (data.reportedHeights :> data.heights).toDenseVector
 sum(I(overReportMask :& isMale))
+
+
+/** Breeze Function Optimization */
+def f(xs: DenseVector[Double]) = sum(xs :^ 2.0)
+def gradf(xs: DenseVector[Double]) = 2.0 :* xs
+val xs = DenseVector.ones[Double](3) // (1., 1., 1.)
+f(xs) // 3.
+gradf(xs) // 2., 2., 2.
+
+val optTrait = new DiffFunction[DenseVector[Double]] {
+  def calculate(xs: DenseVector[Double]) = (f(xs), gradf(xs))
+}
+
+val minimum = minimize(optTrait, DenseVector(1.0, 1.0, 1.0)) // optimizer and start val
+
+
+/** Numerical Derivatives */
+val approxOptTrait = new ApproximateGradientFunction(f)
+approxOptTrait.gradientAt(DenseVector.ones(3)) // ~ 2.0, 2.0, 2.0
+minimize(approxOptTrait, DenseVector.ones[Double](3)) // ~ 0., 0., 0.
+
+
+/** Regularization */
+minimize(optTrait, DenseVector(1.0, 1.0, 1.0), L2Regularization(0.5))
+
+
+/** Example: Logistic Regression */
