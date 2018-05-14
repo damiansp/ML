@@ -128,3 +128,44 @@ minimize(optTrait, DenseVector(1.0, 1.0, 1.0), L2Regularization(0.5))
 
 
 /** Example: Logistic Regression */
+object LogisticRegressionHWData extends App {
+  val data = HWData.load
+
+  // Rescale features to Z scores
+  def rescaled(v: DenseVector[Double]) = (v - mean(v)) / stddev(v)
+
+  val rescaledHeights = rescaled(data.heights)
+  val rescaledWeights = rescaled(data.weights)
+
+  // Build feature matrix
+  val rescaledHeightsAsMatrix = rescaledHeights.toDenseMatrix.t
+  val rescaledWeightsAsMatrix = rescaledWeights.toDenseMatrix.t
+  val featureMatrix = DenseMatrix.horzcat(DenseMatrix.ones[Double](rescaledHeightsAsMatrix.rows, 1),
+                                          rescaledHeightsAsMatrix,
+                                          rescaledWeightsAsMatrix)
+  println(s"Feature matrix size: ${featureMatrix.rows} x ${featureMatrix.cols}")
+
+  // Build target variable to be 1.0 = male; 0 = female
+  val target = data.genders.values.map { gender => if(gender == 'M') 1.0 else 0.0 }
+
+  // Build loss Function
+  def costFunction(parameters: DenseVector[Double]): Double = {
+    val xBeta = featureMatrix * parameters
+    val expXBeta = exp(xBeta) - sum((target :* xBeta) - log1p(expXBeta))
+  }
+
+  def costFunctionGradient(parameters: DenseVector[Double]): DenseVector[Double] = {
+    val xBeta = featureMatrix * parameters
+    val probs = sigmoid(xBeta)
+    featureMatrix.t * (probs - target)
+  }
+
+  val f = new DiffFunction[DenseVector[Double]] {
+    def calculate(parameters: DenseVector[Double]) = (costFunction(parameters), 
+                                                      costFunctionGradient(parameters))
+  }
+
+  val optimalParameters = minimize(f, DenseVector(0.0, 0.0, 0.0))
+  println(optimalParameters)
+}
+
