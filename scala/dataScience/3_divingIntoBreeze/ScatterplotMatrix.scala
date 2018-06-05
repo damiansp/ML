@@ -7,12 +7,12 @@ class ScatterplotMatrix(val figure: Figure) {
 		val ncols = featureMatrix.cols
 		require(ncols == labels.size, "Number of columns in feature matrix must match labels length")
 		figure.clear
-		figure.subplot(ncols, ncols 0)
+		figure.subplot(ncols, ncols, 0)
 		(0 until ncols) foreach { irow =>
 			val p = selectPlot(ncols)(irow, irow)
 			plotHistogram(p)(featureMatrix(::, irow), labels(irow))
-			(0 until irow) for each { icol =>
-				val p = selectPlot(ncols)(irow, irow)
+			(0 until irow) foreach { icol =>
+				val p = selectPlot(ncols)(irow, icol)
 				plotScatter(p)(featureMatrix(::, irow), featureMatrix(::, icol), labels(irow), labels(icol))
 			}
 		}
