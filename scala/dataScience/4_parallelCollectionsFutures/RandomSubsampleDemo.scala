@@ -11,18 +11,18 @@ object RandomSubsampleDemo extends App {
 	val rescaledHeights: DenseVector[Double] = ((data.heights - mean(data.heights)) 
 		                                          / stddev(data.heights))
 	val rescaledWeights: DenseVector[Double] = ((data.weights - mean(data.weights))
-																							/ stddev(data.weight))
-	val featureMatrix: DenseVector[Double] = DenseMatrix.horzcat(
-		DenseMatrix.ones[Double](data.npoints, 1),
+																							/ stddev(data.weights))
+	val featureMatrix: DenseMatrix[Double] = DenseMatrix.horzcat(
+		DenseMatrix.ones[Double](data.nPoints, 1),
 		rescaledHeights.toDenseMatrix.t,
 		rescaledWeights.toDenseMatrix.t)
 	val target: DenseVector[Double] = data.genders.values.map { gender => 
-		if (gender == 'M') 1. else 0.
+		if (gender == 'M') 1.0 else 0.0
 	}
 
   /* CV */
   val testSize = 20
-  val cvCalculator = new RandomSubsample(data.npoints, testSize)
+  val cvCalculator = new RandomSubsample(data.nPoints, testSize)
   val cvErrors = cvCalculator.mapSamples(1000) { (trainingIndices, testIndices) =>
   	val regressor = new LogisticRegression(data.featureMatrix(trainingIndices, ::).toDenseMatrix,
   		                                     data.target(trainingIndices).toDenseVector)
