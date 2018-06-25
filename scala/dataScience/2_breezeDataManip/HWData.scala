@@ -19,7 +19,7 @@ object HWData {
       DenseVector.tabulate(lines.size) { row => converter(splitLines(row)(index)) }
     }
 
-    val genders = fromList(1, elem => elem.replace("\"").head)
+    val genders = fromList(1, elem => elem.replace("\"", "").head)
     val weights = fromList(2, elem => elem.toDouble)
     val heights = fromList(3, elem => elem.toDouble)
     val reportedWeights = fromList(4, elem => elem.toDouble)
@@ -33,7 +33,7 @@ object HWData {
 class HWData(val weights: DenseVector[Double],
              val heights: DenseVector[Double],
              val reportedWeights: DenseVector[Double],
-             val reportedHeights: DenseVecotr[Double],
+             val reportedHeights: DenseVector[Double],
              val genders: DenseVector[Char]) {
   val nPoints = heights.length
   require(weights.length == nPoints)
