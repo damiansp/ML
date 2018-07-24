@@ -1,6 +1,7 @@
 data/
 project/
 target/
+repo/
 
 
 # OS Generated
@@ -19,6 +20,8 @@ __pycache__
 # IntelliJ
 #=========
 .idea/
+
+
 
 
 TODO.txt
