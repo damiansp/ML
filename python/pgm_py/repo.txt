@@ -1,0 +1,1 @@
+https://github.com/shark8me/Building_Probabilistic_Graphical_Models_in_Python/tree/master/chap02
