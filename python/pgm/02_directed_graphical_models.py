@@ -16,3 +16,12 @@ def get_table_cpd():
 
 table = get_table_cpd()
 print(table)
+
+print(table.specificquery(dict(Offer='1'), dict()))
+print(table.specificquery(dict(Offer='1'), dict(Grades='0')))
+print(table.specificquery(dict(Experience='1'), dict()))
+print(table.specificquery(dict(Experience='1'), dict(Interview='2')))
+print(
+    table.specificquery(dict(Experience='1'), dict(Interview='2', Grades='0')))
+
+      
