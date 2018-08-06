@@ -22,6 +22,9 @@ __pycache__
 .idea/
 
 
+# File types
+#===========
+*.xls
 
 
 TODO.txt
