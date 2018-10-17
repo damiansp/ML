@@ -2,6 +2,7 @@ data/
 project/
 target/
 repo/
+models/
 
 
 # OS Generated
