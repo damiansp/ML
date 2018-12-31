@@ -1,0 +1,43 @@
+package J4DS;
+
+import java.util.List;
+import static java.lang.System.out;
+
+import info.bliki.api.Page;
+import info.bliki.api.User;
+import info.bliki.wiki.filter.SectionHeader;
+import info.bliki.wiki.model.ITableOfContent;
+import info.bliki.wiki.model.Reference;
+import info.bliki.wiki.model.WikiModel;
+
+
+public class BlikiExample {
+  public static void main(String[] args) {
+    User user = new User("", "", "http://en.wikipedia.org/w/api.php");
+    user.login();
+     
+    String[] titles = {"Data Science"};
+    List<Page> pageList = user.queryContent(titles);
+
+    for (Page page: pageList) {
+      WikiModel wikiModel = new WikiModel("${image}", "${title}");
+      out.println("Image Base URL: " + wikiModel.getImageBaseURL()
+                  + "\nPage Name: " + wikiModel.getPageName()
+                  + "\nWiki Base URL: " + wikiModel.getWikiBaseURL());
+      String htmlStr = wikiModel.render(
+        "This is a simple [[Hello World]] wiki tag");
+      out.println(htmlStr);
+      String htmlText = wikiModel.render(page.toString());
+      out.println("Title: " + page.getTitle()
+                  + "\nImage URL: " + page.getImageUrl()
+                  + "\nTimestamp: " + page.getCurrentRevision().getTimestamp());
+      List<Reference> refList = wikiModel.getReferences();
+      out.println(refList.size());
+      for (Reference ref: refList) out.println(ref.getRefString());
+      ITableOfContent toc = wikiModel.getTableOfContent();
+      List<SectionHeader> sections = toc.getSectionHeaders();
+      for (SectionHeader sh: sections) out.println(sh.getFirst());
+      out.println(htmlText);
+    }
+  }
+}
