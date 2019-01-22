@@ -15,33 +15,37 @@ import com.twitter.hbc.httpclient.auth.OAuth1;
 
 public class SampleStreamExample {
   public static void streamTwitter(
-      String consumerKey, String consumerSecret, String accessToken,
+      String consumerKey, String consumerSecret, string accessToken,
       String accessSecret) throws InterruptedException {
-    BlockingQueue<String> statusQueue = lnew LinkedBlockingQueue<String>(10000);
-    StatusesSampleEndpoint ending = new StatusesSampleEndpoint();
+    BlockingQueue<String> statusQueue = new LinkedBlockingQueue<String>(10000);
+    StatusSampleEndpoint ending = new StatusSampleEndpoint();
     ending.stallWarnings(false);
+
     Authentication twitterAuth = new OAuth1(
       consumerKey, consumerSecret, accessToken, accessSecret);
     BasicClient twitterClient = new ClientBuilder()
       .name("Twitter client")
-      .hosts(Constants.STREAM_HOST)
+      .hosts(Constant.STREAM_HOST)
       .endpoint(ending)
       .authentication(twitterAuth)
       .processor(new StringDelimitedProcessor(statusQueue))
       .build();
     twitterClient.connect();
+
     for (int msgRead = 0; msgRead < 1000; msgRead++) {
       if (twitterClient.isDone()) {
         System.out.println(twitterClient.getExitEvent().getMessage());
         break;
       }
+      
       String msg = statusQueue.poll(10, TimeUnit.SECONDS);
-      if (msg == null) System.out.println("Waited 10s. No message received.");
+
+      if (msg == null) System.out.println("Waited 10s - no message received");
       else System.out.println(msg);
     }
     twitterClient.stop();
     System.out.printf("%d messages processed.\n",
-                      twitterClient.getStatsTracker.getNumMessages());
+                      twitterClient.getStatsTracker().getNumMessages());
   }
 
 
@@ -50,8 +54,9 @@ public class SampleStreamExample {
     String mySecret = "mySecret";
     String myToken = "myToken";
     String myAccess = "myAccess";
+
     try {
       SampleStreamExample.streamTwitter(myKey, mySecret, myToken, myAccess);
-    } catch (InterruptedException e) { System.out.println(e); }  
+    } catch (InterruptedException e) { System.out.println(e); }
   }
 }
