@@ -16,7 +16,7 @@ import org.jsoup.select.Elements;
 public class SimpleWebCrawler {
   private final String topic;
   private final String startingURL;
-  private final String urlLimiter;
+  private final String urlLimiter; // links must contain this to be followed
   private final int pageLimit = 20;
   private final ArrayList<String> visitedList = new ArrayList<>();
   private final ArrayList<String> pageList = new ArrayList<>();
