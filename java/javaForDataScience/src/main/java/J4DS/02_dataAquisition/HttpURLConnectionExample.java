@@ -1,4 +1,4 @@
-package httpurlconnectionexample;
+//package httpurlconnectionexample;
 
 import java.io.BufferedReader;
 import java.io.IOException;
