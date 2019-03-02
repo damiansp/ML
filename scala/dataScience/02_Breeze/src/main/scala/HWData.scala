@@ -6,7 +6,7 @@ import breeze.stats._
 import breeze.optimize._
 
 object HWData {
-  val DataDir = "data"
+  val DataDir = "/Users/dsp/Learning/ML/scala/dataScience/02_Breeze/data"
   val fileName = "rep_height_weights.csv"
 
   def load: HWData = {
