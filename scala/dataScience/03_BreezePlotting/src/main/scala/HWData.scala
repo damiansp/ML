@@ -1,0 +1,49 @@
+import scala.reflect.ClassTag
+import io.Source
+
+import breeze.linalg._
+import breeze.stats._
+import breeze.optimize._
+
+object HWData {
+  val DataDir = "/Users/dsp/Learning/ML/scala/dataScience/02_Breeze/data"
+  val fileName = "rep_height_weights.csv"
+
+  def load: HWData = {
+    val file = Source.fromFile(DataDir + "/" + fileName)
+    val lines = file.getLines.toVector
+    val splitLines = lines.map {_.split(',')}
+
+    def fromList[T: ClassTag](index: Int, converter: String => T): DenseVector[T] =
+      DenseVector.tabulate(lines.size){row => converter(splitLines(row)(index))}
+
+    val genders = fromList(1, elem => elem.replace("\"", "").head)
+    val weights = fromList(2, elem => elem.toDouble)
+    val heights = fromList(3, elem => elem.toDouble)
+    val reportedWeights = fromList(4, elem => elem.toDouble)
+    val reprotedHeights = fromList(5, elem => elem.toDouble)
+    new HWData(weights, heights, reportedWeights, reprotedHeights, genders)
+  }
+}
+
+
+class HWData (
+    val weights: DenseVector[Double], val heights: DenseVector[Double],
+    val reportedWeights: DenseVector[Double], val reportedHeights: DenseVector[Double],
+    val genders: DenseVector[Char]) {
+  val n = heights.length
+  require(weights.length == n)
+  require(reportedWeights.length == n)
+  require(reportedHeights.length == n)
+  require(genders.length == n)
+  lazy val rescaledHeights: DenseVector[Double] = (heights - mean(heights)) / stddev(heights)
+  lazy val rescaledWeights: DenseVector[Double] = (weights - mean(weights)) / stddev(weights)
+  lazy val featureMatrix: DenseMatrix[Double] = DenseMatrix.horzcat(
+    DenseMatrix.ones[Double](n, 1),
+    rescaledHeights.toDenseMatrix.t,
+    rescaledWeights.toDenseMatrix.t)
+  lazy val target: DenseVector[Double] = genders.values.map{gender =>
+    if (gender == 'M') 1.0 else 0.0}
+
+  override def toString: String = s"HWData [$n rows]"
+}
