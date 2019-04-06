@@ -1,0 +1,25 @@
+{
+  "persons": {
+    "groupname": "school",
+      "person": [
+         {
+           "lastname": "Smith",
+           "firstname": "Peter",
+           "phone": 8475552222,
+           "address": ["100 Main Street","Corpus","Oklahoma"]
+         },
+         {
+           "lastname": "King",
+           "firstname": "Sarah",
+           "phone": 8475551111,
+           "address": ["200 Main Street","Corpus","Oklahoma"]
+         },
+         {
+           "lastname": "Frost",
+           "firstname": "Nathan",
+           "phone": 8475553333,
+           "address": ["300 Main Street","Corpus","Oklahoma"]
+         }
+      ]
+  }
+}
