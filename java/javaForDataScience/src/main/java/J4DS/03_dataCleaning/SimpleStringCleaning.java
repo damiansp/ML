@@ -14,6 +14,8 @@ import com.aliasi.tokenizer.TokenizerFactory;
 
 
 public class SimpleStringCleaning {
+  private final String STOPWORDS_FILE = "path/to/stopwords.txt";
+  
   public static void main(String[] args) {
     String dirtyText = (
       "Call me Ishmael. Some years ago- never mind how long precisely - having "
@@ -63,5 +65,54 @@ public class SimpleStringCleaning {
   }
 
 
-  public static void removeStopWords(String text) {}
+  public static void removeStopWords(String text) {
+    try {
+      Scanner readStop = new Scanner(new File(STOPWORDS_FILE));
+      ArrayList<String> words = new ArrayList<String>(
+        Arrays.asList(simpleCleanToArray(text)));
+
+      out.println("Original clean text: " + words.toString());
+      ArrayList<String> foundWords = new ArrayList();
+
+      while (readStop.hasNextLine()) {
+        String stopWord = readStop.nextLine().toLowerCase();
+
+        if (word.contains(stopWord)) { foundWords.add(stopWord); }
+      }
+      words.removeAll(foundWords);
+      out.println("With stop words removed: " + words.toString());
+    } catch (FileNotFoundException e) { e.printStackTrace(); }
+  }
+
+
+  public static void removeStopWordsRemoveAll(String text) {
+    try {
+      out.println(text);
+      Scanner stopWordList = new Scanner(new File(STOPWORDS_FILE));
+      TreeSet<String> stopWords = new TreeSet<String>();
+
+      while (stopWordList.hasNextLine()) {
+        stopWords.add(stopWordList.nextLine());
+      }
+      ArrayList<String> dirtyText = new ArrayList<String>(
+        Arrays.asList(text.split(" ")));
+
+      dirtyText.removeAll(stopWords);
+      out.println("Clean words: ");
+      for (String x: dirtyText) { out.print(x + " "); }
+      out.println();
+      stopWordList.close();
+    } catch (FileNotFoundException e) { e.printStackTrace(); }
+  }
+
+
+  public static void remove StopWithLing(String text) {
+    out.println(text);
+    text = text.toLowerCase().trim();
+    TokenizerFactory fact = IndoEuropeanTokenizerFactory.INSTANCE;
+
+    fact = new EnglishStopTokenizerFactory(fact);
+    Tokenizer tok = fact.tokenizer(text.toCharArray(), 0, text.length());
+    for (String word: tok) { out.print(word + " "); }
+  }
 }
