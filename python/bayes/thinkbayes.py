@@ -1029,12 +1029,17 @@ class UnimplementedMethodException(Exception):
 
 class Suite(Pmf):
     '''Represents a suite of hypotheses and their probabilities.'''
+    def __init__(self, hypo=tuple()): # ADDED #
+        '''Initialize distribution'''
+        Pmf.__init__(self)
+        for h in hypo:
+            self.Set(h, 1)
+        self.Normalize()
 
     def Update(self, data):
-        '''Updates each hypothesis based on the data.
-
+        '''
+        Updates each hypothesis based on the data.
         data: any representation of the data
-
         returns: the normalizing constant
         '''
         for hypo in self.Values():
@@ -1108,7 +1113,7 @@ class Suite(Pmf):
     def Print(self):
         '''Prints the hypotheses and their probabilities.'''
         for hypo, prob in sorted(self.Items()):
-            print(hypo, prob)
+            print(f'{hypo}: {prob}')
 
     def MakeOdds(self):
         '''Transforms from probabilities to odds.
