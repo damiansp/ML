@@ -745,14 +745,13 @@ def MakeUniformPmf(low, high, n):
 
 
 class Cdf(object):
-    '''Represents a cumulative distribution function.
-
+    '''
+    Represents a cumulative distribution function.
     Attributes:
         xs: sequence of values
         ps: sequence of probabilities
         name: string used as a graph label.
     '''
-
     def __init__(self, xs=None, ps=None, name=''):
         self.xs = [] if xs is None else xs
         self.ps = [] if ps is None else ps
@@ -847,11 +846,10 @@ class Cdf(object):
             return self.xs[index]
 
     def Percentile(self, p):
-        '''Returns the value that corresponds to percentile p.
-
+        '''
+        Returns the value that corresponds to percentile p.
         Args:
             p: number in the range [0, 100]
-
         Returns:
             number value
         '''
@@ -1272,8 +1270,8 @@ class EstimatedPdf(Pdf):
 
 
 def Percentile(pmf, percentage):
-    '''Computes a percentile of a given Pmf.
-
+    '''
+    Computes a percentile of a given Pmf.
     percentage: float 0-100
     '''
     p = percentage / 100.0
