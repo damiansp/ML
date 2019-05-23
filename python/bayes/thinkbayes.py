@@ -1061,16 +1061,13 @@ class Suite(Pmf):
             self.Incr(hypo, like)
 
     def UpdateSet(self, dataset):
-        '''Updates each hypothesis based on the dataset.
-
+        '''
+        Updates each hypothesis based on the dataset.
         This is more efficient than calling Update repeatedly because
         it waits until the end to Normalize.
-
         Modifies the suite directly; if you want to keep the original, make
         a copy.
-
         dataset: a sequence of data
-
         returns: the normalizing constant
         '''
         for data in dataset:
@@ -1533,19 +1530,19 @@ def GaussianCdfInverse(p, mu=0, sigma=1):
 
 
 class Beta(object):
-    '''Represents a Beta distribution.
-
+    '''
+    Represents a Beta distribution.
     See http://en.wikipedia.org/wiki/Beta_distribution
     '''
     def __init__(self, alpha=1, beta=1, name=''):
-        '''Initializes a Beta distribution.'''
+        '''Initializes a Beta distribution (default is uniform [Beta(1, 1)]).'''
         self.alpha = alpha
         self.beta = beta
         self.name = name
 
     def Update(self, data):
-        '''Updates a Beta distribution.
-
+        '''
+        Updates a Beta distribution.
         data: pair of int (heads, tails)
         '''
         heads, tails = data
