@@ -1203,17 +1203,16 @@ class Pdf(object):
     '''Represents a probability density function (PDF).'''
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         raise UnimplementedMethodException()
 
     def MakePmf(self, xs, name=''):
-        '''Makes a discrete version of this Pdf, evaluated at xs.
-
+        '''
+        Makes a discrete version of this Pdf, evaluated at xs.
         xs: equally-spaced sequence of values
-
         Returns: new Pmf
         '''
         pmf = Pmf(name=name)
@@ -1225,10 +1224,9 @@ class Pdf(object):
 
 class GaussianPdf(Pdf):
     '''Represents the PDF of a Gaussian distribution.'''
-
     def __init__(self, mu, sigma):
-        '''Constructs a Gaussian Pdf with given mu and sigma.
-
+        '''
+        Constructs a Gaussian Pdf with given mu and sigma.
         mu: mean
         sigma: standard deviation
         '''
@@ -1236,8 +1234,8 @@ class GaussianPdf(Pdf):
         self.sigma = sigma
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         return EvalGaussianPdf(x, self.mu, self.sigma)
@@ -1245,17 +1243,16 @@ class GaussianPdf(Pdf):
 
 class EstimatedPdf(Pdf):
     '''Represents a PDF estimated by KDE.'''
-
     def __init__(self, sample):
-        '''Estimates the density function based on a sample.
-
+        '''
+        Estimates the density function based on a sample.
         sample: sequence of data
         '''
         self.kde = scipy.stats.gaussian_kde(sample)
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         return self.kde.evaluate(x)
@@ -1375,12 +1372,11 @@ def SampleSum(dists, n):
 
 
 def EvalGaussianPdf(x, mu, sigma):
-    '''Computes the unnormalized PDF of the normal distribution.
-
+    '''
+    Computes the unnormalized PDF of the normal distribution.
     x: value
     mu: mean
     sigma: standard deviation
-    
     returns: float probability density
     '''
     return scipy.stats.norm.pdf(x, mu, sigma)
