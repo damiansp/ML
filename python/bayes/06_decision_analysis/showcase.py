@@ -33,10 +33,23 @@ class Player(object):
         pmf = self.PmfPrice()
         self.prior = Price(pmf, self)
         self.posterior = self.prior.Copy()
-        self.posteriro.Update(guess)
+        self.posterior.Update(guess)
 
     def PmfPrice(self):
         return self.pdf_price.MakePmf(self.price_xs)
+
+    def ProbOverbid(self):
+        return self.cdf_diff.Prob(-1) # overbid by $1 (diff = -1) or more
+
+    def ProbWorseThan(self, diff):
+        return 1 - self.cdf_diff.Prob(diff)
+
+    def OptimalBid(self, guess, opponent):
+        self.MakeBeliefs(guess)
+        calc = GainCalculator(self, opponent)
+        bids, gains = calc.ExpectedGains()
+        gain, bid = max(zip(gains, bids))
+        return bid, gain
 
 
 class Price(Suite):
@@ -70,4 +83,16 @@ class GainCalculator(object):
             total += prob * gain
         return total
 
+    def Gain(self, bid, price):
+        if bid > price:
+            return 0
+        diff = price 
+        prob = self.ProbWin(diff)
+        if diff <= 250: # win both showcases
+            return 2 * prob * price
+        return prob * price
+
+    def ProbWin(self, diff):
+        prob = self.opponent.ProbOverbid() + self.opponent.ProbWorseThan(diff)
+        return prob
     
