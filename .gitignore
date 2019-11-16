@@ -23,10 +23,18 @@ __pycache__
 .idea/
 
 
+# Dirs
+#=====
+lib/
+
+
 # File types
 #===========
 *.xls
+*.pdf
 
 
+# Specific files
+#===============
 TODO.txt
 
