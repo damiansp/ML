@@ -145,7 +145,7 @@ class _DictWrapper(object):
         Initializes with a map from value to probability.
         values: map from value to probability
         '''
-        for value, prob in values.iteritems():
+        for value, prob in values.items():
             self.Set(value, prob)
 
     def InitPmf(self, values):
@@ -208,7 +208,7 @@ class _DictWrapper(object):
         self.log = True
         if m is None:
             m = self.MaxLike()
-        for x, p in self.d.iteritems():
+        for x, p in self.d.items():
             if p:
                 self.Set(x, math.log(p / m))
             else:
@@ -225,7 +225,7 @@ class _DictWrapper(object):
         self.log = False
         if m is None:
             m = self.MaxLike()
-        for x, p in self.d.iteritems():
+        for x, p in self.d.items():
             self.Set(x, math.exp(p - m))
 
     def GetDict(self):
@@ -259,7 +259,7 @@ class _DictWrapper(object):
 
     def Print(self):
         '''Prints the values and freqs/probs in ascending order.'''
-        for val, prob in sorted(self.d.iteritems()):
+        for val, prob in sorted(self.d.items()):
             print(val, prob)
 
     def Set(self, x, y=0):
@@ -370,11 +370,11 @@ class Pmf(_DictWrapper):
         return MakeCdfFromPmf(self, name=name)
 
     def ProbGreater(self, x):
-        t = [prob for (val, prob) in self.d.iteritems() if val > x]
+        t = [prob for (val, prob) in self.d.items() if val > x]
         return sum(t)
 
     def ProbLess(self, x):
-        t = [prob for (val, prob) in self.d.iteritems() if val < x]
+        t = [prob for (val, prob) in self.d.items() if val < x]
         return sum(t)
 
     def Normalize(self, fraction=1.0):
@@ -406,7 +406,7 @@ class Pmf(_DictWrapper):
             raise ValueError('Pmf contains no values.')
         target = random.random()
         total = 0.0
-        for x, p in self.d.iteritems():
+        for x, p in self.d.items():
             total += p
             if total >= target:
                 return x
@@ -420,7 +420,7 @@ class Pmf(_DictWrapper):
             float mean
         '''
         mu = 0.0
-        for x, p in self.d.iteritems():
+        for x, p in self.d.items():
             mu += p * x
         return mu
 
@@ -436,7 +436,7 @@ class Pmf(_DictWrapper):
         if mu is None:
             mu = self.Mean()
         var = 0.0
-        for x, p in self.d.iteritems():
+        for x, p in self.d.items():
             var += p * (x - mu) ** 2
         return var
 
@@ -745,14 +745,13 @@ def MakeUniformPmf(low, high, n):
 
 
 class Cdf(object):
-    '''Represents a cumulative distribution function.
-
+    '''
+    Represents a cumulative distribution function.
     Attributes:
         xs: sequence of values
         ps: sequence of probabilities
         name: string used as a graph label.
     '''
-
     def __init__(self, xs=None, ps=None, name=''):
         self.xs = [] if xs is None else xs
         self.ps = [] if ps is None else ps
@@ -847,11 +846,10 @@ class Cdf(object):
             return self.xs[index]
 
     def Percentile(self, p):
-        '''Returns the value that corresponds to percentile p.
-
+        '''
+        Returns the value that corresponds to percentile p.
         Args:
             p: number in the range [0, 100]
-
         Returns:
             number value
         '''
@@ -978,7 +976,7 @@ def MakeCdfFromDict(d, name=''):
     Returns:
         Cdf object
     '''
-    return MakeCdfFromItems(d.iteritems(), name)
+    return MakeCdfFromItems(d.items(), name)
 
 
 def MakeCdfFromHist(hist, name=''):
@@ -1029,12 +1027,17 @@ class UnimplementedMethodException(Exception):
 
 class Suite(Pmf):
     '''Represents a suite of hypotheses and their probabilities.'''
+    def __init__(self, hypo=tuple()): # ADDED #
+        '''Initialize distribution'''
+        Pmf.__init__(self)
+        for h in hypo:
+            self.Set(h, 1)
+        self.Normalize()
 
     def Update(self, data):
-        '''Updates each hypothesis based on the data.
-
+        '''
+        Updates each hypothesis based on the data.
         data: any representation of the data
-
         returns: the normalizing constant
         '''
         for hypo in self.Values():
@@ -1058,16 +1061,13 @@ class Suite(Pmf):
             self.Incr(hypo, like)
 
     def UpdateSet(self, dataset):
-        '''Updates each hypothesis based on the dataset.
-
+        '''
+        Updates each hypothesis based on the dataset.
         This is more efficient than calling Update repeatedly because
         it waits until the end to Normalize.
-
         Modifies the suite directly; if you want to keep the original, make
         a copy.
-
         dataset: a sequence of data
-
         returns: the normalizing constant
         '''
         for data in dataset:
@@ -1108,7 +1108,7 @@ class Suite(Pmf):
     def Print(self):
         '''Prints the hypotheses and their probabilities.'''
         for hypo, prob in sorted(self.Items()):
-            print(hypo, prob)
+            print(f'{hypo}: {prob}')
 
     def MakeOdds(self):
         '''Transforms from probabilities to odds.
@@ -1203,17 +1203,16 @@ class Pdf(object):
     '''Represents a probability density function (PDF).'''
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         raise UnimplementedMethodException()
 
     def MakePmf(self, xs, name=''):
-        '''Makes a discrete version of this Pdf, evaluated at xs.
-
+        '''
+        Makes a discrete version of this Pdf, evaluated at xs.
         xs: equally-spaced sequence of values
-
         Returns: new Pmf
         '''
         pmf = Pmf(name=name)
@@ -1225,10 +1224,9 @@ class Pdf(object):
 
 class GaussianPdf(Pdf):
     '''Represents the PDF of a Gaussian distribution.'''
-
     def __init__(self, mu, sigma):
-        '''Constructs a Gaussian Pdf with given mu and sigma.
-
+        '''
+        Constructs a Gaussian Pdf with given mu and sigma.
         mu: mean
         sigma: standard deviation
         '''
@@ -1236,8 +1234,8 @@ class GaussianPdf(Pdf):
         self.sigma = sigma
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         return EvalGaussianPdf(x, self.mu, self.sigma)
@@ -1245,17 +1243,16 @@ class GaussianPdf(Pdf):
 
 class EstimatedPdf(Pdf):
     '''Represents a PDF estimated by KDE.'''
-
     def __init__(self, sample):
-        '''Estimates the density function based on a sample.
-
+        '''
+        Estimates the density function based on a sample.
         sample: sequence of data
         '''
         self.kde = scipy.stats.gaussian_kde(sample)
 
     def Density(self, x):
-        '''Evaluates this Pdf at x.
-
+        '''
+        Evaluates this Pdf at x.
         Returns: float probability density
         '''
         return self.kde.evaluate(x)
@@ -1267,8 +1264,8 @@ class EstimatedPdf(Pdf):
 
 
 def Percentile(pmf, percentage):
-    '''Computes a percentile of a given Pmf.
-
+    '''
+    Computes a percentile of a given Pmf.
     percentage: float 0-100
     '''
     p = percentage / 100.0
@@ -1370,17 +1367,16 @@ def SampleSum(dists, n):
 
     returns: new Pmf of sums
     '''
-    pmf = MakePmfFromList(RandomSum(dists) for i in xrange(n))
+    pmf = MakePmfFromList(RandomSum(dists) for i in range(n))
     return pmf
 
 
 def EvalGaussianPdf(x, mu, sigma):
-    '''Computes the unnormalized PDF of the normal distribution.
-
+    '''
+    Computes the unnormalized PDF of the normal distribution.
     x: value
     mu: mean
     sigma: standard deviation
-    
     returns: float probability density
     '''
     return scipy.stats.norm.pdf(x, mu, sigma)
@@ -1439,7 +1435,7 @@ def MakePoissonPmf(lam, high, step=1):
     returns: normalized Pmf
     '''
     pmf = Pmf()
-    for k in xrange(0, high + 1, step):
+    for k in range(0, high + 1, step):
         p = EvalPoissonPmf(k, lam)
         pmf.Set(k, p)
     pmf.Normalize()
@@ -1530,19 +1526,19 @@ def GaussianCdfInverse(p, mu=0, sigma=1):
 
 
 class Beta(object):
-    '''Represents a Beta distribution.
-
+    '''
+    Represents a Beta distribution.
     See http://en.wikipedia.org/wiki/Beta_distribution
     '''
     def __init__(self, alpha=1, beta=1, name=''):
-        '''Initializes a Beta distribution.'''
+        '''Initializes a Beta distribution (default is uniform [Beta(1, 1)]).'''
         self.alpha = alpha
         self.beta = beta
         self.name = name
 
     def Update(self, data):
-        '''Updates a Beta distribution.
-
+        '''
+        Updates a Beta distribution.
         data: pair of int (heads, tails)
         '''
         heads, tails = data
@@ -1578,14 +1574,14 @@ class Beta(object):
             pmf = cdf.MakePmf()
             return pmf
 
-        xs = [i / (steps - 1.0) for i in xrange(steps)]
+        xs = [i / (steps - 1.0) for i in range(steps)]
         probs = [self.EvalPdf(x) for x in xs]
         pmf = MakePmfFromDict(dict(zip(xs, probs)), name)
         return pmf
 
     def MakeCdf(self, steps=101):
         '''Returns the CDF of this distribution.'''
-        xs = [i / (steps - 1.0) for i in xrange(steps)]
+        xs = [i / (steps - 1.0) for i in range(steps)]
         ps = [scipy.special.betainc(self.alpha, self.beta, x) for x in xs]
         cdf = Cdf(xs, ps)
         return cdf
