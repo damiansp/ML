@@ -87,7 +87,73 @@ C = [A B] % R: cbind(A, B);
 D = [A; B] % R: rbind(A, B);
 
 
+
+% Computing on Data-------------------------------------------------------------
+B = [11 12; 13 14; 15 16];
+C = [1 1; 2 2];
+
+AC = A * C % mat mult;
+disp(AC)
+
+D = A .* B % element-wise;
+disp(D)
+
+A2 = A .^2 % elemen-wise squaring;
+disp(A2)
+
+v = [1; 2; 3];
+1 ./ v % 1; 1/2; 1/3
+
+log(v) % element-wise log
+
+A' % A transpose;
+B'
+
+a = [1 15 2 0.5];
+[val, ind] = max(a) % val=15 ind = 2;
+
+max(A) % col-wise, so: 5 6;
+
+a < 3       % 1 0 1 1;
+find(a < 3) % 1 3 4;
+
+A = magic(3);
+[r, c] = find(A >= 7) % r (rows) = 1 3 2, c (cols) = 1 2 3 (eg, 1,1 3,2 2,3);
+
+sum(a)  % 18.5
+prod(a) % 15
+
+max(rand(3), rand(3)) % pairwise max of two rand 3x3 mats
+max(A, [], 1) % colwise maxes: 8 9 7
+max(A)        % same           8 9 7
+max(A, [], 2) % rowwise: 8 7 9
+max(max(A))   % 9
+max(A(:))     % 9
+
+A = magic(9);
+sum(A, 1) % colwise sums
+sum(A, 2) % rowwise
+
+% sum diagonals
+sum(sum(A .* eye(9)))
+sum(sum(A .* flipud(eye(9))))
+
+A = magic(3);
+Ainv = pinv(A); % "pseudo"-inverse
+A * Ainv % I3
+
+
+
+
+  
   
 
+
+
+ 
+  
+  
+  
+  
   
                         
