@@ -144,9 +144,42 @@ A * Ainv % I3
 
 
 
+% Plotting Data----------------------------------------------------------------
+t = [0:0.01:0.98];
+y1 = sin(8 * pi * t);
+plot(t, y1)
+y2 = cos(8 * pi * t);
+plot(t, y2) % new plotting window
 
-  
-  
+plot(t, y1)
+hold on % use same plotting device
+plot(t, y2, 'r')
+xlabel('time')
+ylabel('height')
+legend('sin', 'cos')
+title('Sinusoids!')
+print -dpng 'myPlot.png'
+close % shut plotting device
+
+figure(1)
+plot(t, y1)
+figure(2) % opens new device; 1 stays open
+plot(t, y2)
+
+subplot(1, 2, 1) % like matplotlib subplot(121)
+plot(t, y1)
+subplot(1, 2, 2)
+plot(t, y2)
+axis([0.5, 1, -1, 1]) % xlim and ylim
+
+clf % clear figure
+
+A = magic(5);
+imagesc(A) % R: image; matplotlib imshow();
+
+imagesc(A), colorbar, colormap gray;
+
+
 
 
 
