@@ -181,10 +181,81 @@ imagesc(A), colorbar, colormap gray;
 
 
 
+% Control flow-----------------------------------------------------------------
+v = zeros(10, 1);
+
+for i = 1:10,
+  v(i) = 2^i
+end;
+
+disp(v)
+
+inds = 1:10;
+for i = inds,
+  disp(i)
+end;
+
+% break and continue work as ususal
+
+i = 1;
+while i <= 5,
+  v(1) = 100 + i;
+  i = i + 1;
+end;
+disp(v)
+
+i = 1;
+while true,
+  v(i) = 1000 - i;
+  i = i + 1;
+  if i == 6,
+    break;
+  end;
+end;
+
+x = 2;
+if x == 1,
+  disp('1');
+elseif x == 2,
+  disp('2');
+else
+  disp('not 1 or 2');
+end;
 
 
- 
+function y = squareThisNumber(x) % y defines the return value
+  y = x^2;
+
+disp(squareThisNumber(5))
+
+
+function [y1, y2] = squareAndCubeThisNumber(x)
+  y1 = x^2;
+  y2 = x^3;
+
+X = [1 1; 1 2; 1 3];
+y = [1; 2; 3];
+theta = [0; 1]; % params: intercept slope
+
+function J = costFunction(X, y, theta)
+  m = size(X, 1);
+  preds = X * theta;
+  sse = sum((preds - y).^2);
+  J = 1 / (2*m) * sse;
+
+j = costFunction(X, y, theta);
+disp(j) % 0 (scaled err)
+
+theta = [1; 0];
+j = costFunction(X, y, theta);
+disp(j) % 0.333
+
+
   
+
+  
+
+
   
   
   
