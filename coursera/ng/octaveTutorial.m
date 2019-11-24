@@ -249,15 +249,3 @@ disp(j) % 0 (scaled err)
 theta = [1; 0];
 j = costFunction(X, y, theta);
 disp(j) % 0.333
-
-
-  
-
-  
-
-
-  
-  
-  
-  
-                        
