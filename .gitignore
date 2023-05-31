@@ -1,0 +1,40 @@
+data/
+project/
+target/
+repo/
+models/
+
+
+# OS Generated
+#=============
+.DS_Store
+*~
+
+
+# Python/Jupyter
+#===============
+*.pyc
+.ipynb_checkpoints
+__pycache__
+
+
+# IntelliJ
+#=========
+.idea/
+
+
+# Dirs
+#=====
+lib/
+
+
+# File types
+#===========
+*.xls
+*.pdf
+
+
+# Specific files
+#===============
+TODO.txt
+
