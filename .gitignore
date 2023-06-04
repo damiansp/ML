@@ -30,8 +30,9 @@ lib/
 
 # File types
 #===========
-*.xls
 *.pdf
+*.pth
+*.xls
 
 
 # Specific files
