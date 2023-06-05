@@ -9,6 +9,12 @@ def main():
     x_rand = init_rand_from_tensor(x_data)
     rand, ones, zeroes = init_from_shape(shape=(2,3))
     print_tensor_attributes(rand)
+    if torch.cuda.is_available():
+        rand = rand.to('cuda')
+    rand = torch.rand(4, 4)
+    slice_ops(rand)
+    join_tensors(rand, rand)
+    arithmetic(rand)
 
 
 def init_tensor():
@@ -42,6 +48,29 @@ def print_tensor_attributes(x):
     print(f'Stored on: {x.device}')
 
 
+def slice_ops(x):
+    print(f'First row: {x[0]}')
+    print(f'First col: {x[:, 0]}')
+    print(f'Last col: {x[:, -1]}')
+    x[:, 1] = 0
+    print(x)
+
+    
+def join_tensors(x, y):
+    joined = torch.cat([x, y], dim=1)
+    print(joined)
+
+
+def arithmentic(x):
+    xxT = x @ x.T  # same as
+    xxT = tensor.matmul(x.T)
+    z = x * x  # same as
+    w = x.mul(x)
+    agg = tensor.sum()
+    print(agg.item())
+    # inplace ops
+    x.add_(5)
+    
 if __name__ == '__main__':
     main()
           
