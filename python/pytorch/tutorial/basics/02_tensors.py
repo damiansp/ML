@@ -15,6 +15,10 @@ def main():
     slice_ops(rand)
     join_tensors(rand, rand)
     arithmetic(rand)
+    print(rand.numpy())  # convert to np.array
+    # from numpy
+    n = np.ones(3, 5)
+    t = torch.from_numpy(n)
 
 
 def init_tensor():
