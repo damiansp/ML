@@ -1,8 +1,6 @@
-import os
-
 from matplotlib.animation import FuncAnimation, PillowWriter
-import matplotlib.pyplot as pltimport numpy as np
-from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
