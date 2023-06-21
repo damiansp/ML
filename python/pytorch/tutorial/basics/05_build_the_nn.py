@@ -17,6 +17,9 @@ def main():
     pred_probs = nn.Softmax(dim=1)(logits)
     preds = pred_probs.argmax(1)
     print(f'Predicted class:', preds)
+    print(model)
+    for name, param, in mod.named_parameters():
+        print(f'Layer: {name} | Size: {param.size()} | Values: {param[:2]}\n')
 
 
 class NeuralNetwork(nn.Module):
@@ -42,3 +45,14 @@ def spell_it_out():
     flatten = nn.Flatten()
     flat_img = flatten(input_img)
     print(flat_img.size())   # 3, 784
+    layer1 = nn.Linear(in_features=28 * 28, out_features=20)
+    hidden1 = layer1(flat_img)
+    print(hidden1.size())    # 3, 20
+    h1 = nn.ReLU()(hidden1)  # 0s out neg values
+    
+    seq = nn.Sequential(flatten, layer1, nn.ReLU(), nn.Linear(20, 10))
+    logits = seq(input_img)
+    softmax = nn.Softmax(dim=2)
+    pred_probs = softmax(logits)
+                         
+                        
