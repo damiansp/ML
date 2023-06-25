@@ -18,6 +18,7 @@ def main():
     print(z.requires_grad)          # False
     z_det = z.detach()
     print(z_det.requires_grad)      # False
+    tensor_gradient()
 
 
 def init_vars():
@@ -31,6 +32,18 @@ def init_weights():
     b = torch.randn(3, requires_grad=True)
     return w, b
 
+
+def tensor_gradient():
+    inp = torch.eye(4, 5, requires_grad=True)
+    out = (inp + 1).pow(2).t()
+    out.backward(torch.ones_like(out), retain_graph=True)
+    print(f'First call:\n{inp.grad}')
+    out.backward(torch.ones_like(out), retain_graph=True)
+    print(f'Second call:\n{inp.grad}')
+    inp.grad.zero_()
+    out.backward(torch.ones_like(out), retain_graph=True)
+    print(f'After zeroing gradient:\n{inp.grad}')
+    
 
 if __name__ == '__main__':
     main()
