@@ -28,6 +28,11 @@ def main():
     mod.fit(X_train, y_train, epochs=EPOCHS)
     test_loss, test_acc = mod.evaluate(X_test, y_test, verbose=2)
     print(f'Test acc: {test_acc:.4f}')
+    prob_mod = tf.keras.Sequential([mod, tf.keras.layers.Softmax()])
+    preds = prob_mod.predict(X_test)
+    print('Sample preds:', preds[0])
+    print('Argmax:', np.argmax(preds[0]))
+    print('Actual:', y_test[0])
 
 
 def explore(X_train, y_train, X_test, y_test):
@@ -70,6 +75,33 @@ def init_mod():
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(len(LABELS))])
     return mod
+
+
+def plot_image(i, pred_array, y_actual, img):
+    y_actual, img = y_actual[i], img[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(img, cmap=plt.cm.binary)
+    y_pred = np.argmax(pred_array)
+    color = 'blue' if y_pred == y_actual else 'red'
+    plt.xlabel(
+        f'{LABELS[y_pred]} {100 * np.max(pred_array):2.0f}% '
+        f'({LABELS[y_pred]})',
+        color=color)
+
+
+def plot_val_array(i, pred_array, y_actual):
+    y_actual = y_actual[i]
+    plt.grid(False)
+    plt.xticks(range(10))
+    plt.yticks([])
+    this_plot = plt.bar(range(10), pred_array, color='#777777')
+    plt.ylim([0, 1])
+    y_pred = np.argmax(preds_array)
+    this_plot[y_pred].set_color('red')
+    this_plot[y_actual].set_color('blue')
+
                    
 
 if __name__ == '__main__':
