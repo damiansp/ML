@@ -33,6 +33,7 @@ def main():
     print('Sample preds:', preds[0])
     print('Argmax:', np.argmax(preds[0]))
     print('Actual:', y_test[0])
+    verify_predictions(preds, X_test, y_test)
 
 
 def explore(X_train, y_train, X_test, y_test):
@@ -47,6 +48,7 @@ def preprocess(X_train, X_test, y_train):
     X_train = X_train / 255.
     X_test = X_test / 255.
     plot_sample(X_train, y_train)
+    return X_train, X_test
 
 
 def plot_img(img):
@@ -71,7 +73,7 @@ def plot_sample(X, y):
 
 def init_mod():
     mod = tf.keras.Sequential([
-        tf.keras.layers.Flattern(input_shape=(28, 28)),
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(len(LABELS))])
     return mod
@@ -98,10 +100,22 @@ def plot_val_array(i, pred_array, y_actual):
     plt.yticks([])
     this_plot = plt.bar(range(10), pred_array, color='#777777')
     plt.ylim([0, 1])
-    y_pred = np.argmax(preds_array)
+    y_pred = np.argmax(pred_array)
     this_plot[y_pred].set_color('red')
     this_plot[y_actual].set_color('blue')
 
+
+def verify_predictions(preds, X_test, y_test):
+    n_rows = 5
+    n_cols = 3
+    n_imgs = n_rows * n_cols
+    plt.figure(figsize=[2 * 2 * n_cols, 2 * n_rows])
+    for i in range(n_imgs):
+        plt.subplot(n_rows, 2 * n_cols, 2*i + 1)
+        plot_image(i, preds[i], y_test, X_test)
+        plt.subplot(n_rows, 2 * n_cols, 2*i + 2)
+        plot_val_array(i, preds[i], y_test)
+    plt.show()
                    
 
 if __name__ == '__main__':
