@@ -34,6 +34,7 @@ def main():
     print('Argmax:', np.argmax(preds[0]))
     print('Actual:', y_test[0])
     verify_predictions(preds, X_test, y_test)
+    use_mod(X_test, y_test, mod)
 
 
 def explore(X_train, y_train, X_test, y_test):
@@ -116,7 +117,46 @@ def verify_predictions(preds, X_test, y_test):
         plt.subplot(n_rows, 2 * n_cols, 2*i + 2)
         plot_val_array(i, preds[i], y_test)
     plt.show()
-                   
+
+
+def use_mod(X_test, y_test, mod):
+    img = X_test[1]
+    print(img.shape)  # 28, 28
+    # Add img to batch of one:
+    img = np.expand_dims(img, 0)
+    print(img.shape)  # 1, 28, 28
+    pred = mod.predict(img)
+    print(pred)       # probs for each class
+    plot_val_array(1, pred[0], y_test)
+    _ = plt.xticks(range(10), LABELS, rotation=45)
+    plt.show()
+    
 
 if __name__ == '__main__':
     main()
+
+
+# Derived from:
+# https://www.tensorflow.org/tutorials/keras/classification#use_the_trained_model
+# Original license:
+# MIT License
+#
+# Copyright (c) 2017 François Chollet
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
