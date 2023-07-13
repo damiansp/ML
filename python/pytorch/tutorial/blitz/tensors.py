@@ -5,6 +5,7 @@ import torch
 def main():
     rand_t = init_tensors()
     show_tensor_attributes(rand_t)
+    tensor_ops(rand_t)
 
 
 def init_tensors():
@@ -46,6 +47,32 @@ def show_tensor_attributes(tensor):
     print(f'DType: {tensor.dtype}')
     print(f'Stored on: {tensor.device}')
 
+
+def tensor_ops(tensor):
+    tensor = move_to_gpu(tensor)
+    index_tensor(tensor)
+    big_tensor = join_tensors(tensor, tensor)
+
+
+def move_to_gpu(tensor):
+    if torch.cuda.is_available():
+        tensor = tensor.to('cuda')
+        print('Tensor moved to GPU')
+    else:
+        print('Tensor on CPU')
+    return tensor
+
+
+def index_tensor(tensor):
+    tensor = torch.ones(4, 4)
+    tensor[:, 1] = 0
+    print('tensor:', tensor)
+
+
+def join_tensors(*args):
+    t = torch.cat([*args], dim=1)
+    print('Concat:', t)
+    return t
 
 if __name__ == '__main__':
     main()
