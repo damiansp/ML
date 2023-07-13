@@ -12,14 +12,20 @@ print(tf.__version__)
 
 
 BATCH = 32
+EPOCHS = 10
 SEED = 42
 MAX_FEATURES = 10_000
 SEQ_LEN = 250
+EMBED_DIM = 16
+DROPOUT = 0.2
 
 
 def main():
     raw_dataset = download_data()
-    dataset = prep_data(raw_dataset)
+    train_ds, val_ds, test_ds = prep_data(raw_dataset)
+    mod = create_model()
+    history = train(mod, train_ds, val_ds)
+    
 
 
 def download_data():
@@ -73,6 +79,9 @@ def prep_data(raw_dataset):
     print('1287 --> ', vectorize_layer.get_vocabulary()[1287])
     print(' 313 --> ', vectorize_layer.get_vocabulary()[313])
     print('Vocab size:', len(vectorize_layer.get_vocabulary()))
+    return [
+        ds.map(vecorize_text) for ds in [raw_train_ds, raw_val_ds, raw_test_ds]
+    ]
 
 
 def standardize_text(data):
@@ -80,3 +89,23 @@ def standardize_text(data):
     no_html = tf.strings.regex_replace(lower, '<br />', ' ')
     return tf.strings.regex_replace(
         no_html, '[%s]' % re.escape(string.punctuation), '')
+
+
+def create_model():
+    mod = tf.keras.Sequential([
+        layers.Embedding(MAX_FEATURES + 1, EMBED_DIM),
+        layers.Dropout(DROPOUT),
+        layers.GlobalAveragePooling1D(),
+        layers.Dropout(DROPOUT),
+        layers.Dense(1)])
+    print(mod.summary())
+    mod.compile(
+        loss=losses.BinaryCrossentropy(from_logits=True),
+        optimizer='adam',
+        metrics=tf.metrics.BinaryAccuracy(threshold=0.))
+    return mod
+
+
+def train(mod, train_ds, val_ds):
+    history = mod.fit(train_ds, validation_data=val_ds, epochs=EPOCHS)
+    return history
