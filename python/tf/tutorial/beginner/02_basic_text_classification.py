@@ -25,7 +25,8 @@ def main():
     train_ds, val_ds, test_ds = prep_data(raw_dataset)
     mod = create_model()
     history = train(mod, train_ds, val_ds)
-    
+    evaluate(mod, test_ds)
+    plot_history(history.history)
 
 
 def download_data():
@@ -73,6 +74,11 @@ def prep_data(raw_dataset):
     vectorize_layer.adapt(train_text)
     text_batch, label_batch = next(iter(raw_train_ds))
     first_review, first_label = text_batch[0], label_batch[0]
+
+    def vectorize_text(text, label):
+        text = tf.expand_dims(text, -1)
+        return vectorize_layer(text), label
+
     print('Review:', first_review)
     print('Label:', raw_train_ds.class_names[first_label])
     print('Vectorized:', vectorize_text(first_review, first_label))
@@ -80,8 +86,8 @@ def prep_data(raw_dataset):
     print(' 313 --> ', vectorize_layer.get_vocabulary()[313])
     print('Vocab size:', len(vectorize_layer.get_vocabulary()))
     return [
-        ds.map(vecorize_text) for ds in [raw_train_ds, raw_val_ds, raw_test_ds]
-    ]
+        ds.map(vectorize_text)
+        for ds in [raw_train_ds, raw_val_ds, raw_test_ds]]
 
 
 def standardize_text(data):
@@ -109,3 +115,28 @@ def create_model():
 def train(mod, train_ds, val_ds):
     history = mod.fit(train_ds, validation_data=val_ds, epochs=EPOCHS)
     return history
+
+
+def evaluate(mod, test_ds):
+    loss, acc = mod.evaluate(test_ds)
+    print('Loss:', loss)
+    print('Acc: ', acc)
+
+
+def plot_history(history):
+    acc = history['binary_accuracy']
+    val_acc = history['val_binary_accuracy']
+    loss = history['loss']
+    val_loss = history['val_loss']
+    plt.subplot(1, 2, 1)
+    plt.plot(loss, color='k', label='training')
+    plt.plot(val_loss, color='r', label='validation')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.subplot(1, 2, 2)
+    plt.plot(acc, color='k')
+    plt.plot(val_acc, color='r')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.show()

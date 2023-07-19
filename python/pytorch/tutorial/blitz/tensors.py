@@ -6,6 +6,7 @@ def main():
     rand_t = init_tensors()
     show_tensor_attributes(rand_t)
     tensor_ops(rand_t)
+    bridge_with_numpy()
 
 
 def init_tensors():
@@ -52,6 +53,9 @@ def tensor_ops(tensor):
     tensor = move_to_gpu(tensor)
     index_tensor(tensor)
     big_tensor = join_tensors(tensor, tensor)
+    multiply(tensor)
+    tensor.add_(5)  # inplace op
+    
 
 
 def move_to_gpu(tensor):
@@ -73,6 +77,37 @@ def join_tensors(*args):
     t = torch.cat([*args], dim=1)
     print('Concat:', t)
     return t
+
+
+def multiply(tensor):
+    t2 = tensor * tensor     # tensor.mul(tensor)
+    print('t2:')
+    print(t2)
+    ttT = tensor @ tensor.T  # tensor.matmul(tensor)
+    print('ttT:')
+    print(ttT)
+
+
+def bridge_with_numpy():
+    tensor_to_np()
+    np_to_tensor()
+
+
+def tensor_to_np():
+    t = torch.ones(5)
+    n = t.numpy()
+    print(f'n: {n}')
+    t.add_(2)
+    print(f'n after update to t: {n}')
+
+
+def np_to_tensor():
+    n = np.ones(5)
+    t = torch.from_numpy(n)
+    print('t:', t)
+    np.add(n, 1, out=n)
+    print('t after update to n:', t)
+    
 
 if __name__ == '__main__':
     main()
