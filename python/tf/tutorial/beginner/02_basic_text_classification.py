@@ -1,3 +1,5 @@
+# Derived from the tutorial at
+# www.tensorflow.org/tutorials/keras/text_classification
 import os
 import re
 import shutil
@@ -22,13 +24,14 @@ DROPOUT = 0.2
 
 def main():
     raw_dataset = download_data()
-    train_ds, val_ds, test_ds = prep_data(raw_dataset)
+    [train_ds, val_ds, test_ds], vectorize_layer = prep_data(raw_dataset)
     mod = create_model()
     history = train(mod, train_ds, val_ds)
     evaluate(mod, test_ds)
     plot_history(history.history)
+    export_model(mod, vectorize_layer, raw_dataset[-1])
 
-
+    
 def download_data():
     url = 'https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
     dataset = tf.keras.utils.get_file(
@@ -85,9 +88,10 @@ def prep_data(raw_dataset):
     print('1287 --> ', vectorize_layer.get_vocabulary()[1287])
     print(' 313 --> ', vectorize_layer.get_vocabulary()[313])
     print('Vocab size:', len(vectorize_layer.get_vocabulary()))
-    return [
-        ds.map(vectorize_text)
-        for ds in [raw_train_ds, raw_val_ds, raw_test_ds]]
+    return (
+        [ds.map(vectorize_text)
+         for ds in [raw_train_ds, raw_val_ds, raw_test_ds]].
+        vectorize_layer)
 
 
 def standardize_text(data):
@@ -140,3 +144,19 @@ def plot_history(history):
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.show()
+
+
+def export_model(mod, vectorize_layer, raw_test_set):
+    mod = tf.keras.Sequential([
+        vectorize_layer, mod, layers.Activation('sigmoid')])
+    mod.compile(
+        loss=losses.BinaryCrossentropy(from_logits=False),
+        optimizer='adam',
+        metrics=['accuracy'])
+    loss, acc = mod.evaluate(raw_test_set)
+    print('Test acc:', acc)
+    new_exs = [
+        'The movie was great!', 'The movie was ok',
+        'That was the worst movie ever!']
+    print('Preds on new data:', mod.predict(new_exs))
+    
