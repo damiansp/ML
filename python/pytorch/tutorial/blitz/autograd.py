@@ -1,4 +1,5 @@
 import torch
+from torch import nn, optim
 from torchvision.models import resnet18, ResNet18_Weights
 
 ETA = 1e-2
@@ -15,6 +16,8 @@ def main():
     optim = torch.optim.SGD(mod.parameters(), lr=ETA, momentum=MOMENTUM)
     optim.step()       # grad desc
     differentiate()
+    exclude_from_dag()
+    freeze_for_fine_tuning()
 
 
 def differentiate():
@@ -26,7 +29,24 @@ def differentiate():
     print(a.grad == 9 * a**2)  # True
     print(b.grad == -2 * b)    # True
     
-    
+
+def exclude_from_dag():
+    x = torch.rand(5, 5)
+    y = torch.rand(5, 5)
+    z = torch.rand((5, 5), requires_grad=True)
+    a = x + y
+    b = x + z
+    print('a requires grad:', a.requires_grad)  # F
+    print('b requires grad:', b.requires_grad)  # T
+
+
+def freeze_for_fine_tuning():
+    mod = resnet18(weights=ResNet18_Weights.DEFAULT)
+    # Freeze all params
+    for param in mod.parameters():
+        param.requires_grad = False
+    mod.fc = nn.Linear(512, 10)   # refit top layer to new labels
+    optimizer = optim.SGD(mod.parameters(), lr=ETA, momentum=MOMENTUM)
 
 
 if __name__ == '__main__':
