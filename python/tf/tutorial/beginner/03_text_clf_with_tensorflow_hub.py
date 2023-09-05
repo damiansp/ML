@@ -10,6 +10,12 @@ def main():
     print_setup()
     train_data, valid_data, test_data = download_data()
     explore(train_data)
+    mod = build_model(train_data[:3])
+    mod.compile(
+        optimizer='adam',
+        loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+        metrics=['accuracy'])
+    ## train()
 
 
 def print_setup():
@@ -34,6 +40,19 @@ def explore(data):
     print(examples)
     print('Labels:')
     print(labels)
+
+
+def build_model(training_sample):
+    embedding = 'https://tfhub.dev/google/nnlm-en-dim50/2'
+    hub_layer = hub.KerasLayer(
+        embedding, input_shape=[], dtype=tf.string, trainable=True)
+    print(hub_layer(training_sample))
+    mod = tf.keras.Sequential()
+    mod.add(hub_layer)
+    mod.add(tf.keras.layers.Dense(16, activation='relu'))
+    mod.add(tf.keras.layers.Dense(1))
+    print(mod.summary())
+    return mod
 
 
 if __name__ == '__main__':
