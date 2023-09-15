@@ -6,6 +6,10 @@ import tensorflow_datasets as ds
 import tensorflow_hub as hub
 
 
+BATCH = 512
+EPOCHS = 10
+
+
 def main():
     print_setup()
     train_data, valid_data, test_data = download_data()
@@ -15,7 +19,10 @@ def main():
         optimizer='adam',
         loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
         metrics=['accuracy'])
-    ## train()
+    history = train(mod, train_data, valid_data)
+    res = mod.evalute(test_data.batch(BATCH, verbose=2))
+    for name, val in zip(mod.metrics_names, res):
+        print(f'{name}: {val:.3f}')
 
 
 def print_setup():
@@ -55,5 +62,42 @@ def build_model(training_sample):
     return mod
 
 
+def train(mod, train_data, valid_data):
+    history = mod.fit(
+        train_data.shuffle(10_000).batch(BATCH),
+        epochs=EPOCHS,
+        vaelidation_data=valid_data.batch(BATCH),
+        verbose=1)
+    return history
+
+
 if __name__ == '__main__':
     main()
+
+
+# Derived from
+# https://www.tensorflow.org/tutorials/keras/text_classification_with_hub
+
+# Original license:
+
+# MIT License
+#
+# Copyright (c) 2017 François Chollet
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
