@@ -14,7 +14,10 @@ print('TF:', tf.__version__)
 def main():
     raw_data = get_data()
     data = clean(raw_data)
-    # t/t split
+    train_ds, test_ds = split_train_test(data)
+    inspect(train_ds)
+    X_train, y_train = split_xy(train_ds, 'MPG')
+    X_test, y_test = split_xy(train_ds, 'MPG')
     
 
 def get_data():
@@ -45,9 +48,26 @@ def dummify_origin(df):
     df = pd.get_dummies(
         df, columns=['Origin'], prefix='Origin', prefix_sep='_')
     return df
+
+
+def split_train_test(data):
+    train = data.sample(frac=0.8, random_state=5093)
+    test = data.drop(train.index)
+    return train, test
+
+
+def inspect(train_ds):
+    sns.pairplot(
+        train_ds[['MPG', 'Cylinders', 'Displacement', 'Weight']],
+        diag_kind='kde')
+    print(train_ds.describe().transpose())
     
 
-
+def split_xy(ds, y_name):
+    X = ds.copy()
+    y = X.pop(y_name)
+    return X, y
+    
 if __name__ == '__main__':
     main()
 
