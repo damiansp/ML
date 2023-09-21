@@ -23,6 +23,7 @@ def main():
     show_random_images(train_loader)
     net = Net()
     net = train(train_loader, net)
+    test(test_loader, net)
 
 
 def get_data_loaders():
@@ -96,6 +97,57 @@ def train(train_loader, net):
     torch.save(net.state_dict(), MOD_PATH)
     print('Model saved to', MOD_PATH)
     return net
+
+
+def test(test_loader):
+    net = Net()
+    net.load_state_dict(torch.load(MOD_PATH))
+    test_sample(test_loader, net)
+    test_all(test_loader, net)
+    assess_performance(test_loader)
+    
+    
+def test_sample(test_loader, net)
+    data_iter = iter(test_loader)
+    imgs, labels = next(data_iter)
+    show_img(torchvision.utils.make_grid(imgs))
+    print(
+        'Ground Truth:',
+        ' '.join(f'{CLASSES[labels[i]]:5s}' for i in range(4)))
+    outputs = net(imgs)
+    _, preds = torch.max(outputs, 1)
+    print('Predicted:', ' '.join(f'{CLASSES[preds[i]]:5s}' for i in range(4)))
+
+
+def test_all(test_loader, net):
+    n_correct = 0
+    n = 0
+    with torch.no_grad():
+        for data in test_loader:
+            imgs, labels = data
+            outputs = net(imgs)
+            _, preds = torch.max(output.data, 1)
+            n += labels.size(0)
+            n_correct += (preds == labels).sum().item()
+    print(f'Accuracy: {n_correct / n}')
+
+
+def assess_performance(test_loader):
+    correct_pred = {c: 0 for c in CLASSES}
+    total_pred = {c: 0 for c in CLASSES}
+    with torch.no_grad():
+        for data in test_loader:
+            imgs, labels = data
+            outputs = net(imgs)
+            _, preds = torch.max(output.data, 1)
+            for label, pred in in zip(labels, preds):
+                if label == pred:
+                    correct_pred[CLASSES[label]] += 1
+                total_pred[CLASSES[label]] += 1
+    print('Accuracy by class:')
+    for classname, n_correct in correct_pred.items():
+        acc = n_correct / total_pred[classname]
+        print(f'{classname:5s}: {acc:.2f}')
     
 if __name__ == '__main__':
     main()
