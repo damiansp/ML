@@ -100,16 +100,20 @@ def train(train_loader, net):
 
 
 def test(test_loader):
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     net = Net()
+    net.to(device)
     net.load_state_dict(torch.load(MOD_PATH))
-    test_sample(test_loader, net)
-    test_all(test_loader, net)
+    test_sample(test_loader, net, device)
+    test_all(test_loader, net, device)
     assess_performance(test_loader)
     
     
-def test_sample(test_loader, net)
+def test_sample(test_loader, net, device)
     data_iter = iter(test_loader)
     imgs, labels = next(data_iter)
+    imgs = imgs.to(device)
+    labels = labels.to(device)
     show_img(torchvision.utils.make_grid(imgs))
     print(
         'Ground Truth:',
@@ -119,12 +123,14 @@ def test_sample(test_loader, net)
     print('Predicted:', ' '.join(f'{CLASSES[preds[i]]:5s}' for i in range(4)))
 
 
-def test_all(test_loader, net):
+def test_all(test_loader, net, device):
     n_correct = 0
     n = 0
     with torch.no_grad():
         for data in test_loader:
             imgs, labels = data
+            imgs = imgs.to(device)
+            labels = labels.to(device)
             outputs = net(imgs)
             _, preds = torch.max(output.data, 1)
             n += labels.size(0)
