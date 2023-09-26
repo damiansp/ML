@@ -18,6 +18,7 @@ def main():
     inspect(train_ds)
     X_train, y_train = split_xy(train_ds, 'MPG')
     X_test, y_test = split_xy(train_ds, 'MPG')
+    normalizer = init_normalizer(X_train)
     
 
 def get_data():
@@ -67,6 +68,13 @@ def split_xy(ds, y_name):
     X = ds.copy()
     y = X.pop(y_name)
     return X, y
+
+
+def init_normalizer(X_train):
+    normalizer = tf.keras.layers.Normalization(axis=-1)
+    normalizer.adapt(np.array(X_train))
+    return normalizer
+
     
 if __name__ == '__main__':
     main()
