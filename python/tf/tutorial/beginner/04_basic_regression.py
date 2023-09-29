@@ -11,6 +11,10 @@ np.set_printoptions(precision=3, suppress=True)
 print('TF:', tf.__version__)
 
 
+ETA = 0.1
+EPOCHS = 100
+
+
 def main():
     raw_data = get_data()
     data = clean(raw_data)
@@ -19,6 +23,11 @@ def main():
     X_train, y_train = split_xy(train_ds, 'MPG')
     X_test, y_test = split_xy(train_ds, 'MPG')
     normalizer = init_normalizer(X_train)
+    hp_mod = run_one_var_regression(X_train, y_train)
+    test_res = {}
+    test_res = evaluate_mod(
+        hp_mod, 'hp_mod', X_test['Horsepower'], y_test, test_res)
+    plot_hp_mod(hp_mod, X_train, y_train)
     
 
 def get_data():
@@ -75,7 +84,55 @@ def init_normalizer(X_train):
     normalizer.adapt(np.array(X_train))
     return normalizer
 
-    
+
+def run_one_var_regression(X_train, y_train):
+    hp = np.array(X_train['Horsepower'])
+    hp_normalizer = layers.Normalization(input_shape=[1,], axis=None)
+    hp_normalizer.adapat(hp)
+    hp_mod = tf.keras.Sequential([hp_normalizer, layers.Dense(units=1)])
+    print(hp_mod.summary())
+    hp_mod.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=ETA),
+        loss='mean_absolute_error')
+    history = hp_mod.fit(
+        X_train['Horsepower'],
+        y_train,
+        epochs=EPOCHS,
+        verbose=0,
+        validation_split=0.2)
+    hist = pd.DataFrame(history.history)
+    hist['epoch'] = history.epoch
+    print(hist.tail())
+    plot_loss(history)
+    return hp_mod
+
+
+def plot_loss(history):
+    plt.plot(history.history['loss'], label='loss')
+    plt.plot(history.history['val_loss'], label='validation loss')
+    #plt.ylim([0, 10)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss (MAE)')
+    plt.legend()
+    plt.show()
+
+
+def evaluate_mod(mod, mod_name, X_test, y_test, test_res):
+    test_res[mod_name] = mod.evaluate(X_test, y_test, verbose=0)
+    return test_res
+
+
+def plot_hp_mod(hp_mod, X_train, y_train):
+    x = tf.linspace(0., 250, 251)
+    fitted = hp_mod.predict(x)
+    plt.scatter(X_train['Horsepower'], y_train, label='Data')
+    plt.plot(x, fitted, color='k', label='Fitted model')
+    plt.xlabel('HP')
+    plt.ylabel('MPG')
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     main()
 
