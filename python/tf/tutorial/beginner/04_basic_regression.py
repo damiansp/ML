@@ -28,6 +28,8 @@ def main():
     test_res = evaluate_mod(
         hp_mod, 'hp_mod', X_test['Horsepower'], y_test, test_res)
     plot_hp_mod(hp_mod, X_train, y_train)
+    multi_mod = run_multiple_regression(X_train, y_train, normalizer)
+    test_res = evaluate_mod(multi_mod, 'multi_mod', X_test, y_test, test_res)
     
 
 def get_data():
@@ -131,6 +133,21 @@ def plot_hp_mod(hp_mod, X_train, y_train):
     plt.ylabel('MPG')
     plt.legend()
     plt.show()
+
+
+def run_multiple_regression(X_train, y_train, normalizer):
+    multi_mod = tf.keras.Sequential([normalizer, layers.Dense(units=1)])
+    multi_mod.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=ETA),
+        loss='mean_absolute_error')
+    history = multi_mod.fit(
+        X_train,
+        y_train,
+        epochs=EPOCHS,
+        verbose=0,
+        validation_split=0.2)
+    plot_loss(history)
+    return multi_mod
 
 
 if __name__ == '__main__':
