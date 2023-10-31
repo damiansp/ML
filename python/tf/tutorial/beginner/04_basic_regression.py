@@ -30,6 +30,7 @@ def main():
     plot_hp_mod(hp_mod, X_train, y_train)
     multi_mod = run_multiple_regression(X_train, y_train, normalizer)
     test_res = evaluate_mod(multi_mod, 'multi_mod', X_test, y_test, test_res)
+    dnn_mod = run_deep_nn(X_train, y_train, normalizer)
     
 
 def get_data():
@@ -148,6 +149,30 @@ def run_multiple_regression(X_train, y_train, normalizer):
         validation_split=0.2)
     plot_loss(history)
     return multi_mod
+
+
+def run_deep_nn(X_train, y_train, normalizer):
+    mod = build_dnn_mod(normalizer)
+    print(mod.summary())
+    history = mod.fit(
+        X_train['Horsepower'],
+        y_train,
+        epochs=EPOCHS,
+        verbose=0,
+        validation_split=0.2)
+    plot_loss(history)
+
+
+def build_dnn_mod(normalizer):
+    mod = tf.keras.Sequential([
+        normalizer,
+        layers.Dense(64, activation='relu'),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1)])
+    mod.compile(
+        loss='mean_absolute_error',
+        optimzer=tf.keras.optimizers.Adam(learning_rate=ETA))
+    return mod
 
 
 if __name__ == '__main__':
