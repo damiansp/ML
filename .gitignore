@@ -33,6 +33,7 @@ lib/
 *.pdf
 *.pth
 *.xls
+*.ann
 
 
 # Specific files
