@@ -39,4 +39,4 @@ lib/
 # Specific files
 #===============
 TODO.txt
-
+.env
